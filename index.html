@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="#" class="formulario">
+        <div class="form-group">
+            <label for="nameTask">Nome da Tarefa</label>
+            <input type="text" class="nameTask validar" name="nameTask">
+        </div>
+
+        <div class="form-group">
+            <label for="dateTask">Data da Tarefa</label>
+            <input type="date" class="dateTask validar" name="dateTask">
+        </div>
+
+        <div class="form-group">
+            <label for="statusTask">Status</label>
+            <select name="statusTask" class="statusTask validar">
+                <option value="">Selecione</option>
+                <option value="pendente">Pendente</option>
+                <option value="em progresso">Em progresso</option>
+                <option value="concluida">Concluída</option>
+            </select>
+        </div>
+
+        <button type="submit">Adicionar</button>
+    </form>
+
+    <div class="dashboardTasks">
+
+    </div>
+    <script src="./js/index.js"></script>
+</body>
+</html>
