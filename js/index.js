@@ -3,6 +3,7 @@ class Formulario {
     this.formulario = document.querySelector(".formulario");
     this.eventos();
     this.taskList = new TaskList();
+    this.taskList.loadTasks();
   }
 
   eventos() {
@@ -127,14 +128,35 @@ class Task {
 class TaskList {
   constructor() {
     this.tasks = [];
+    this.storage = new Storage();
+  }
+
+  loadTasks(){
+    try{
+      const loadTasks = JSON.parse(localStorage.getItem("tasks"));
+      if(Array.isArray(loadTasks)){
+        this.tasks = loadTasks;
+      }
+    } catch (e) {
+      this.tasks = [];
+    }
   }
 
   addTask(task) {
     this.tasks.push(task);
+    this.storage.saveTasks(this.tasks)
   }
 
   showTasks() {
     console.log(this.tasks);
+  }
+}
+
+class Storage{
+  constructor(){}
+
+  saveTasks(tasks){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 }
 
