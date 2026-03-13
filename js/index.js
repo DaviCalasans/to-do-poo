@@ -2,7 +2,8 @@ class Formulario {
   constructor() {
     this.formulario = document.querySelector(".formulario");
     this.eventos();
-    this.taskList = new TaskList();
+    this.dashboard = new Dashboard();
+    this.taskList = new TaskList(this.dashboard);
     this.taskList.loadTasks();
   }
 
@@ -23,7 +24,6 @@ class Formulario {
       const statusTask = this.formulario.querySelector(".statusTask").value;
       const task = new Task(nameTask, dateTask, statusTask);
       this.taskList.addTask(task);
-      this.taskList.showTasks();
       this.formulario.reset();
     }
   }
@@ -126,7 +126,8 @@ class Task {
 }
 
 class TaskList {
-  constructor() {
+  constructor(dashboard) {
+    this.dashboard = dashboard;
     this.tasks = [];
     this.storage = new Storage();
   }
@@ -136,6 +137,7 @@ class TaskList {
       const loadTasks = JSON.parse(localStorage.getItem("tasks"));
       if(Array.isArray(loadTasks)){
         this.tasks = loadTasks;
+        this.dashboard.showTasks(loadTasks);
       }
     } catch (e) {
       this.tasks = [];
@@ -145,19 +147,39 @@ class TaskList {
   addTask(task) {
     this.tasks.push(task);
     this.storage.saveTasks(this.tasks)
+    this.dashboard.showTasks(this.tasks)
   }
 
-  showTasks() {
-    console.log(this.tasks);
-  }
 }
 
 class Storage{
-  constructor(){}
 
   saveTasks(tasks){
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 }
 
+class Dashboard{
+  constructor(){
+    this.dashboardTasks = document.querySelector('.dashboardTasks');
+  }
+
+  showTasks(tasks){
+    this.dashboardTasks.innerHTML = '';
+    for(let task of tasks){
+      const {nameTask, dateTask, statusTask} = task;
+      this.createCard(nameTask, dateTask, statusTask);
+    }
+  }
+
+  createCard(name, date, status){
+    const div = document.createElement('div');
+    const p = document.createElement('p');
+    div.classList = "card";
+    p.textContent = `${name} ${date} ${status}`;
+    div.appendChild(p);
+    this.dashboardTasks.appendChild(div);
+  }
+
+}
 new Formulario();
