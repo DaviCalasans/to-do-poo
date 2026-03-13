@@ -4,6 +4,7 @@ class Formulario {
     this.eventos();
     this.dashboard = new Dashboard();
     this.taskList = new TaskList(this.dashboard);
+    this.dashboard.taskList = this.taskList;
     this.taskList.loadTasks();
   }
 
@@ -132,12 +133,13 @@ class TaskList {
     this.storage = new Storage();
   }
 
-  loadTasks(){
-    try{
+  loadTasks() {
+    try {
       const loadTasks = JSON.parse(localStorage.getItem("tasks"));
-      if(Array.isArray(loadTasks)){
+      if (Array.isArray(loadTasks)) {
         this.tasks = loadTasks;
         this.dashboard.showTasks(loadTasks);
+        console.log(this.tasks);
       }
     } catch (e) {
       this.tasks = [];
@@ -146,40 +148,67 @@ class TaskList {
 
   addTask(task) {
     this.tasks.push(task);
-    this.storage.saveTasks(this.tasks)
-    this.dashboard.showTasks(this.tasks)
+    this.storage.saveTasks(this.tasks);
+    this.dashboard.showTasks(this.tasks);
   }
 
+  deleteTask(index) {
+    this.tasks.splice(index, 1);
+    this.storage.saveTasks(this.tasks);
+    this.dashboard.showTasks(this.tasks);
+  }
 }
 
-class Storage{
-
-  saveTasks(tasks){
+class Storage {
+  saveTasks(tasks) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 }
 
-class Dashboard{
-  constructor(){
-    this.dashboardTasks = document.querySelector('.dashboardTasks');
+class Dashboard {
+  constructor() {
+    this.dashboardTasks = document.querySelector(".dashboardTasks");
   }
 
-  showTasks(tasks){
-    this.dashboardTasks.innerHTML = '';
-    for(let task of tasks){
-      const {nameTask, dateTask, statusTask} = task;
-      this.createCard(nameTask, dateTask, statusTask);
+  showTasks(tasks) {
+    this.dashboardTasks.innerHTML = "";
+    for (let idx = 0; idx < tasks.length; idx++) {
+      const { nameTask, dateTask, statusTask } = tasks[idx];
+      this.createCard(nameTask, dateTask, statusTask, idx);
     }
   }
 
-  createCard(name, date, status){
-    const div = document.createElement('div');
-    const p = document.createElement('p');
-    div.classList = "card";
-    p.textContent = `${name} ${date} ${status}`;
-    div.appendChild(p);
+  createCard(name, date, status, index) {
+    const { div, p, button } = this.createElements();
+
+    this.configureElements(p, button, name, date, status, index);
+
     this.dashboardTasks.appendChild(div);
   }
+  
+  createElements() {
+    const div = document.createElement("div");
+    const p = document.createElement("p");
+    const button = document.createElement("button");
 
+    div.classList.add("card");
+
+    div.appendChild(p);
+    div.appendChild(button);
+
+    return { div, p, button };
+  }
+
+  configureElements(p, button, name, date, status, index) {
+    p.textContent = `${name} ${date} ${status}`;
+
+    button.textContent = "Deletar";
+    button.value = index;
+
+    button.addEventListener("click", (e) => {
+      const btnValue = Number(e.target.value);
+      this.taskList.deleteTask(btnValue);
+    });
+  }
 }
 new Formulario();
